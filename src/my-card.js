@@ -22,12 +22,13 @@ export class MyCard extends LitElement {
     this.buttonLink = "#";
     this.buttonText = "Button";
     this.bgColor = "cyan";
+    this.fancy = false;
   }
 
   static get styles() {
     return css`
       :host {
-        display: inline-flex;        
+        display: block;        
 
       }
       
@@ -39,6 +40,7 @@ export class MyCard extends LitElement {
       .card{
 
         width: 300px;
+        height: 440px;
         display: flex;
         flex-direction: column;
         padding: 32px;
@@ -48,11 +50,14 @@ export class MyCard extends LitElement {
         margin:16px 16px;
         font-family: "comic sans ms";
         font-size: 16px;
-        text-align: center;     
+        text-align: center;  
+        justify-content: center;   
       }
 
       .card img{
-        width: 300px;
+        max-width: 300px;
+        max-height: 220px;
+        object-fit: contain;
       }
 
       a button{
@@ -68,8 +73,23 @@ export class MyCard extends LitElement {
         background: gray;
         cursor: pointer;
       }
+      :host([fancy]) {
+        display: block;
+        background-color: pink;
+        border: 2px solid fuchsia;
+        box-shadow: 10px 5px 5px red;
+      }
 
     `;
+  }
+  openChanged(e) {
+    console.log(e.newState);
+    if (e.newState === "open") {
+      this.fancy = true;
+    }
+    else {
+      this.fancy = false;
+    }
   }
 
   render() {
@@ -77,7 +97,14 @@ export class MyCard extends LitElement {
         <div class="card">
           <img src="${this.image}" class ="image item" width="300px">
           <h1 class="title item">${this.title}</h1>
-          <p class="description item">${this.description}</p>
+          <!-- <p class="description item">${this.description} <slot></slot></p> -->
+<!-- put this in your render method where you had details -->
+          <details ?open="${this.fancy}" @toggle="${this.openChanged}">
+          <summary>Description</summary>
+          <div>
+            <slot>${this.description}</slot>
+          </div>
+          </details>
           <a href="${this.link}" class="link item" target="_blank">${this.linkText}</a>
           <a href="${this.buttonLink}" class="item" target="_blank">
             <button class="details-button item">${this.buttonText}</button>
@@ -95,7 +122,8 @@ export class MyCard extends LitElement {
       linkText: { type: String },
       buttonText: { type: String },
       buttonLink: { type: String },
-      bgColor: { type: String }
+      bgColor: { type: String },
+      fancy: { type: Boolean, reflect: true }
     };
   }
 }
